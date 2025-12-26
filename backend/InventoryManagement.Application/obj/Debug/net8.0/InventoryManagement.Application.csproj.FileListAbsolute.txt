@@ -1,0 +1,15 @@
+/Users/as2v/Documents/Desktop/inventory-management/backend/InventoryManagement.Application/bin/Debug/net8.0/InventoryManagement.Application.deps.json
+/Users/as2v/Documents/Desktop/inventory-management/backend/InventoryManagement.Application/bin/Debug/net8.0/InventoryManagement.Application.dll
+/Users/as2v/Documents/Desktop/inventory-management/backend/InventoryManagement.Application/bin/Debug/net8.0/InventoryManagement.Application.pdb
+/Users/as2v/Documents/Desktop/inventory-management/backend/InventoryManagement.Application/bin/Debug/net8.0/InventoryManagement.Domain.dll
+/Users/as2v/Documents/Desktop/inventory-management/backend/InventoryManagement.Application/bin/Debug/net8.0/InventoryManagement.Domain.pdb
+/Users/as2v/Documents/Desktop/inventory-management/backend/InventoryManagement.Application/obj/Debug/net8.0/InventoryManagement.Application.csproj.AssemblyReference.cache
+/Users/as2v/Documents/Desktop/inventory-management/backend/InventoryManagement.Application/obj/Debug/net8.0/InventoryManagement.Application.GeneratedMSBuildEditorConfig.editorconfig
+/Users/as2v/Documents/Desktop/inventory-management/backend/InventoryManagement.Application/obj/Debug/net8.0/InventoryManagement.Application.AssemblyInfoInputs.cache
+/Users/as2v/Documents/Desktop/inventory-management/backend/InventoryManagement.Application/obj/Debug/net8.0/InventoryManagement.Application.AssemblyInfo.cs
+/Users/as2v/Documents/Desktop/inventory-management/backend/InventoryManagement.Application/obj/Debug/net8.0/InventoryManagement.Application.csproj.CoreCompileInputs.cache
+/Users/as2v/Documents/Desktop/inventory-management/backend/InventoryManagement.Application/obj/Debug/net8.0/Inventor.0D5EB3FB.Up2Date
+/Users/as2v/Documents/Desktop/inventory-management/backend/InventoryManagement.Application/obj/Debug/net8.0/InventoryManagement.Application.dll
+/Users/as2v/Documents/Desktop/inventory-management/backend/InventoryManagement.Application/obj/Debug/net8.0/refint/InventoryManagement.Application.dll
+/Users/as2v/Documents/Desktop/inventory-management/backend/InventoryManagement.Application/obj/Debug/net8.0/InventoryManagement.Application.pdb
+/Users/as2v/Documents/Desktop/inventory-management/backend/InventoryManagement.Application/obj/Debug/net8.0/ref/InventoryManagement.Application.dll
