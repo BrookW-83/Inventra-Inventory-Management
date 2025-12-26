@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { FiMail, FiLock, FiPackage, FiCheck, FiTrendingUp, FiShield, FiArrowRight } from 'react-icons/fi';
 import { supabase } from '@/lib/supabase';
 
-export function SignInForm() {
+function SignInFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
@@ -232,5 +232,13 @@ export function SignInForm() {
         </div>
       </div>
     </div>
+  );
+}
+
+export function SignInForm() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Loading...</div>}>
+      <SignInFormContent />
+    </Suspense>
   );
 }

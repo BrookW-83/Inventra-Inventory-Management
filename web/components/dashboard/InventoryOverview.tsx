@@ -87,7 +87,7 @@ export function InventoryOverview({ stats }: InventoryOverviewProps) {
             display: false,
           },
           ticks: {
-            font: { weight: '600' },
+            font: { weight: 600 as const },
           },
         },
         y: {
@@ -100,7 +100,7 @@ export function InventoryOverview({ stats }: InventoryOverviewProps) {
             drawBorder: false,
           },
           ticks: {
-            callback: (value: number) => `${value}`,
+            callback: (value: string | number) => `${value}`,
           },
         },
       },

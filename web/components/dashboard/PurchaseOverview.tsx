@@ -94,7 +94,7 @@ export function PurchaseOverview({ stats }: PurchaseOverviewProps) {
             drawBorder: false,
           },
           ticks: {
-            callback: (value: number) => `$${value}`,
+            callback: (value: string | number) => `$${value}`,
           },
         },
       },
