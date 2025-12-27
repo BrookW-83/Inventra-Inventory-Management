@@ -57,9 +57,15 @@ export function SignUpForm() {
         return;
       }
 
-      // User is automatically signed in (no email confirmation required)
-      router.push('/dashboard');
-      router.refresh();
+      // Wait for session to be established
+      if (data.session) {
+        // Small delay to ensure cookies are set
+        await new Promise(resolve => setTimeout(resolve, 100));
+        router.push('/dashboard');
+        router.refresh();
+      } else {
+        setError('Account created but session not established. Please sign in manually.');
+      }
     } catch (err) {
       setError('An error occurred. Please try again.');
     } finally {

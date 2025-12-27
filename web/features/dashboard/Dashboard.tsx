@@ -17,6 +17,11 @@ import { cn } from '@/lib/utils';
 export function Dashboard() {
   const { data: stats, isLoading, error } = useGetDashboardStatsQuery();
 
+  // Log error for debugging
+  if (error) {
+    console.error('Dashboard API Error:', error);
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -31,6 +36,8 @@ export function Dashboard() {
   }
 
   if (error) {
+    const errorMessage = 'status' in error ? `Error ${error.status}: ${JSON.stringify(error.data)}` : 'message' in error ? error.message : 'Unknown error';
+
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center bg-destructive/10 border border-destructive/20 rounded-2xl p-8 max-w-md animate-fadeIn">
@@ -40,7 +47,11 @@ export function Dashboard() {
             </svg>
           </div>
           <p className="text-destructive font-semibold mb-2">Failed to load dashboard data</p>
-          <p className="text-sm text-muted-foreground">Please try refreshing the page</p>
+          <p className="text-sm text-muted-foreground mb-3">Please try refreshing the page</p>
+          <details className="text-xs text-left bg-background/50 rounded p-2">
+            <summary className="cursor-pointer font-medium">Error Details</summary>
+            <pre className="mt-2 overflow-auto">{errorMessage}</pre>
+          </details>
         </div>
       </div>
     );

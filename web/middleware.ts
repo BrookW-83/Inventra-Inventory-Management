@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getToken } from 'next-auth/jwt';
+import { createServerClient } from '@supabase/ssr';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -13,13 +13,60 @@ export async function middleware(request: NextRequest) {
   const protectedPaths = ['/dashboard', '/inventory', '/purchases', '/image-recognition'];
   const isProtectedPath = protectedPaths.some(path => pathname.startsWith(path));
 
-  // Check for NextAuth session token
-  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
 
-  // Check for custom auth tokens in cookies (as fallback)
-  const accessToken = request.cookies.get('accessToken')?.value;
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value;
+        },
+        set(name: string, value: string, options: any) {
+          request.cookies.set({
+            name,
+            value,
+            ...options,
+          });
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          });
+          response.cookies.set({
+            name,
+            value,
+            ...options,
+          });
+        },
+        remove(name: string, options: any) {
+          request.cookies.set({
+            name,
+            value: '',
+            ...options,
+          });
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          });
+          response.cookies.set({
+            name,
+            value: '',
+            ...options,
+          });
+        },
+      },
+    }
+  );
 
-  const isAuthenticated = !!(token || accessToken);
+  const { data: { session } } = await supabase.auth.getSession();
+  const isAuthenticated = !!session;
 
   // If user is authenticated and trying to access auth pages, redirect to dashboard
   if (isAuthenticated && (pathname === '/auth/signin' || pathname === '/auth/signup')) {
@@ -33,7 +80,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(signInUrl);
   }
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {

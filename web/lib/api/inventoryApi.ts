@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { InventoryItem, CreateInventoryItemDto, UpdateInventoryItemDto } from '@/types';
-import { supabase } from '@/lib/supabase';
+import { getSessionWithRetry } from '@/lib/supabase';
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -9,7 +9,7 @@ export const inventoryApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl,
     prepareHeaders: async (headers) => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const session = await getSessionWithRetry();
       if (session?.access_token) {
         headers.set('Authorization', `Bearer ${session.access_token}`);
       }

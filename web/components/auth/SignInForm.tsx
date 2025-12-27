@@ -35,16 +35,32 @@ function SignInFormContent() {
         password,
       });
 
+      console.log('SignIn Response:', { data, error: signInError });
+
       if (signInError) {
         setError(signInError.message || 'Invalid email or password');
         return;
       }
 
       if (data.session) {
+        console.log('Session created:', data.session);
+        console.log('Access token:', data.session.access_token);
+
+        // Small delay to ensure cookies are set
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        // Verify session is accessible
+        const { data: { session: verifySession } } = await supabase.auth.getSession();
+        console.log('Verified session:', verifySession);
+
         router.push('/dashboard');
         router.refresh();
+      } else {
+        setError('No session created. Please try again.');
+        console.error('No session in response:', data);
       }
     } catch (err) {
+      console.error('SignIn error:', err);
       setError('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
