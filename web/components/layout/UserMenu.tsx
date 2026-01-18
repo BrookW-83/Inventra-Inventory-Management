@@ -1,11 +1,14 @@
 'use client';
 
-import { signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { FiLogOut } from 'react-icons/fi';
+import { supabase } from '@/lib/supabase';
 
 export function UserMenu() {
-  const handleLogout = () => {
+  const router = useRouter();
+
+  const handleLogout = async () => {
     // Clear session storage
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('accessToken');
@@ -13,8 +16,12 @@ export function UserMenu() {
       sessionStorage.removeItem('user');
     }
 
-    // Sign out from NextAuth and redirect to signin
-    signOut({ callbackUrl: '/auth/signin', redirect: true });
+    // Sign out from Supabase
+    await supabase.auth.signOut();
+
+    // Redirect to signin page
+    router.push('/auth/signin');
+    router.refresh();
   };
 
   return (

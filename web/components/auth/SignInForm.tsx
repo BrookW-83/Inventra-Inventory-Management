@@ -53,7 +53,29 @@ function SignInFormContent() {
         const { data: { session: verifySession } } = await supabase.auth.getSession();
         console.log('Verified session:', verifySession);
 
-        router.push('/dashboard');
+        // Fetch profile to check role
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        try {
+          const profileRes = await fetch(`${baseUrl}/auth/profile`, {
+            headers: {
+              'Authorization': `Bearer ${data.session.access_token}`,
+            },
+          });
+
+          if (profileRes.ok) {
+            const profile = await profileRes.json();
+            if (profile.role === 'admin') {
+              router.push('/admin');
+            } else {
+              router.push('/dashboard');
+            }
+          } else {
+            router.push('/dashboard');
+          }
+        } catch {
+          router.push('/dashboard');
+        }
+
         router.refresh();
       } else {
         setError('No session created. Please try again.');

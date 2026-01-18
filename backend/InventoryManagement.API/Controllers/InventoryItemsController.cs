@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 using InventoryManagement.Application.DTOs;
 using InventoryManagement.Application.Interfaces;
 using System.Security.Claims;
@@ -46,6 +47,7 @@ public class InventoryItemsController : ControllerBase
     }
 
     [HttpPost]
+    [EnableRateLimiting("strict")]
     public async Task<ActionResult<InventoryItemDto>> Create(CreateInventoryItemDto dto)
     {
         var userId = GetUserId();
@@ -54,6 +56,7 @@ public class InventoryItemsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [EnableRateLimiting("strict")]
     public async Task<ActionResult<InventoryItemDto>> Update(Guid id, UpdateInventoryItemDto dto)
     {
         var userId = GetUserId();
@@ -63,6 +66,7 @@ public class InventoryItemsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/remove")]
+    [EnableRateLimiting("strict")]
     public async Task<ActionResult<InventoryItemDto>> RemoveStock(Guid id, InventoryAdjustmentRequest request)
     {
         var userId = GetUserId();
@@ -72,6 +76,7 @@ public class InventoryItemsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [EnableRateLimiting("strict")]
     public async Task<ActionResult> Delete(Guid id)
     {
         var userId = GetUserId();

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 using InventoryManagement.Application.DTOs;
 using InventoryManagement.Application.Interfaces;
 using System.Security.Claims;
@@ -9,6 +10,7 @@ namespace InventoryManagement.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+[EnableRateLimiting("dashboard")]
 public class DashboardController : ControllerBase
 {
     private readonly IDashboardService _service;

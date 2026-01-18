@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 using InventoryManagement.Application.DTOs;
 using InventoryManagement.Application.Interfaces;
 using System.Security.Claims;
@@ -54,6 +55,7 @@ public class PurchasesController : ControllerBase
     }
 
     [HttpPost]
+    [EnableRateLimiting("strict")]
     public async Task<ActionResult<PurchaseDto>> Create(CreatePurchaseDto dto)
     {
         var userId = GetUserId();
@@ -62,6 +64,7 @@ public class PurchasesController : ControllerBase
     }
 
     [HttpPost("{id:guid}/complete")]
+    [EnableRateLimiting("strict")]
     public async Task<ActionResult<PurchaseDto>> Complete(Guid id)
     {
         var userId = GetUserId();
@@ -71,6 +74,7 @@ public class PurchasesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [EnableRateLimiting("strict")]
     public async Task<ActionResult> Delete(Guid id)
     {
         var userId = GetUserId();

@@ -2,18 +2,21 @@ import { configureStore } from '@reduxjs/toolkit';
 import { inventoryApi } from '../api/inventoryApi';
 import { purchaseApi } from '../api/purchaseApi';
 import { dashboardApi } from '../api/dashboardApi';
+import { adminApi } from '../api/adminApi';
 
 export const store = configureStore({
   reducer: {
     [inventoryApi.reducerPath]: inventoryApi.reducer,
     [purchaseApi.reducerPath]: purchaseApi.reducer,
     [dashboardApi.reducerPath]: dashboardApi.reducer,
+    [adminApi.reducerPath]: adminApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
       inventoryApi.middleware,
       purchaseApi.middleware,
-      dashboardApi.middleware
+      dashboardApi.middleware,
+      adminApi.middleware
     ),
 });
 

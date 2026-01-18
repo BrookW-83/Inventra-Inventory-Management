@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
   const isPublicPath = publicPaths.includes(pathname);
 
   // Protected paths that require authentication
-  const protectedPaths = ['/dashboard', '/inventory', '/purchases', '/image-recognition'];
+  const protectedPaths = ['/dashboard', '/inventory', '/purchases', '/image-recognition', '/admin'];
   const isProtectedPath = protectedPaths.some(path => pathname.startsWith(path));
 
   let response = NextResponse.next({

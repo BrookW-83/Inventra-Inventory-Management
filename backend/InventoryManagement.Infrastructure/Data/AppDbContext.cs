@@ -74,6 +74,11 @@ public class AppDbContext : DbContext
                 .IsRequired()
                 .HasColumnName("name")
                 .HasMaxLength(200);
+            entity.Property(e => e.Role)
+                .IsRequired()
+                .HasColumnName("role")
+                .HasMaxLength(20)
+                .HasDefaultValue("user");
             entity.Property(e => e.CreatedAt)
                 .HasColumnName("created_at")
                 .HasColumnType("timestamp with time zone");

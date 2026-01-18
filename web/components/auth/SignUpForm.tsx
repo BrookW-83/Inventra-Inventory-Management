@@ -57,6 +57,23 @@ export function SignUpForm() {
         return;
       }
 
+      // Create profile in public.profiles table
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            name: formData.name,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          });
+
+        if (profileError) {
+          console.error('Failed to create profile:', profileError);
+          // Don't fail signup if profile creation fails - it can be created later
+        }
+      }
+
       // Wait for session to be established
       if (data.session) {
         // Small delay to ensure cookies are set
@@ -64,7 +81,8 @@ export function SignUpForm() {
         router.push('/dashboard');
         router.refresh();
       } else {
-        setError('Account created but session not established. Please sign in manually.');
+        // Redirect to signin with success message
+        router.push('/auth/signin?registered=true');
       }
     } catch (err) {
       setError('An error occurred. Please try again.');

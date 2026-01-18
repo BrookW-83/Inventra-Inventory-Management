@@ -42,6 +42,7 @@ public class AuthController : ControllerBase
         {
             id = profile.Id,
             name = profile.Name,
+            role = profile.Role,
             createdAt = profile.CreatedAt,
             updatedAt = profile.UpdatedAt
         });

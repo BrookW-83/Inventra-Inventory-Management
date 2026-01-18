@@ -11,8 +11,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const publicPages = ['/', '/auth/signin', '/auth/signup'];
   const isPublicPage = publicPages.includes(pathname || '');
 
-  // If it's a public page, render without sidebar/navbar
-  if (isPublicPage) {
+  // Admin pages have their own layout
+  const isAdminPage = pathname?.startsWith('/admin');
+
+  // If it's a public page or admin page, render without AppLayout wrapper
+  if (isPublicPage || isAdminPage) {
     return <>{children}</>;
   }
 

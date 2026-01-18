@@ -106,3 +106,65 @@ export interface DashboardStats {
   recentInventoryLogs: InventoryLog[];
   recentPurchases: Purchase[];
 }
+
+// User Role enum
+export enum UserRole {
+  User = 'user',
+  Admin = 'admin',
+}
+
+// Profile with role
+export interface UserProfile {
+  id: string;
+  name: string;
+  role: UserRole;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Admin Dashboard Stats
+export interface AdminDashboardStats {
+  dailyRegisteredUsers: number;
+  dailyActiveUsers: number;
+  totalUsers: number;
+  activeUsersCount: number;
+  inactiveUsersCount: number;
+  topActiveUsers: UserActivity[];
+  recentInventoryChanges: RecentInventoryChange[];
+  orderFulfillmentRate: number;
+  backorderCount: number;
+  averageProcessingTimeMinutes: number;
+}
+
+export interface UserActivity {
+  userId: string;
+  userName: string;
+  inventoryUpdatesCount: number;
+  lastActivityAt: string;
+}
+
+export interface RecentInventoryChange {
+  userId: string;
+  userName: string;
+  itemName: string;
+  action: string;
+  quantityChanged: number;
+  createdAt: string;
+}
+
+// Admin User Management
+export interface AdminUser {
+  id: string;
+  name: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
+  totalInventoryItems: number;
+  totalPurchases: number;
+  lastActivityAt: string | null;
+}
+
+export interface UpdateUserDto {
+  name?: string;
+  role?: string;
+}
