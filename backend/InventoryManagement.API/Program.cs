@@ -176,26 +176,18 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        if (builder.Environment.IsDevelopment())
-        {
-            // Allow any localhost port in development
-            policy.SetIsOriginAllowed(origin =>
-                {
-                    var uri = new Uri(origin);
-                    return uri.Host == "localhost" || uri.Host == "127.0.0.1";
-                })
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
-        }
-        else
-        {
-            // Production: only allow specific origins
-            policy.WithOrigins("https://inventra-inventory-management-wm5z.vercel.app")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials();
-        }
+        // Allow both localhost (development) and production origins
+        policy.SetIsOriginAllowed(origin =>
+            {
+                var uri = new Uri(origin);
+                return uri.Host == "localhost"
+                    || uri.Host == "127.0.0.1"
+                    || origin.Contains("vercel.app")
+                    || origin.Contains("inventra");
+            })
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
