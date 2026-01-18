@@ -176,18 +176,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        // Allow both localhost (development) and production origins
-        policy.SetIsOriginAllowed(origin =>
-            {
-                var uri = new Uri(origin);
-                return uri.Host == "localhost"
-                    || uri.Host == "127.0.0.1"
-                    || origin.Contains("vercel.app")
-                    || origin.Contains("inventra");
-            })
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
 
