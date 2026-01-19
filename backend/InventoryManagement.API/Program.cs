@@ -4,12 +4,14 @@ using InventoryManagement.Application.Interfaces;
 using InventoryManagement.Infrastructure.Repositories;
 using InventoryManagement.Infrastructure.Services;
 using InventoryManagement.API.Services;
+using InventoryManagement.API.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Text;
 using System.Threading.RateLimiting;
 using System.Security.Claims;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -118,6 +120,11 @@ builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 builder.Services.AddScoped<IAdminUserService, AdminUserService>();
 builder.Services.AddScoped<TokenService>();
+
+// Stripe Configuration
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+builder.Services.AddScoped<IStripeService, StripeService>();
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
 // JWT Authentication for Supabase
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

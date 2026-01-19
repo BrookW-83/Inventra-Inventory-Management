@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using InventoryManagement.Infrastructure.Data;
 using InventoryManagement.Domain.Entities;
+using InventoryManagement.Application.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace InventoryManagement.API.Controllers;
@@ -38,19 +39,31 @@ public class AuthController : ControllerBase
             return NotFound(new { message = "Profile not found" });
         }
 
-        return Ok(new
+        return Ok(new ProfileDto
         {
-            id = profile.Id,
-            name = profile.Name,
-            role = profile.Role,
-            createdAt = profile.CreatedAt,
-            updatedAt = profile.UpdatedAt
+            Id = profile.Id,
+            Name = profile.Name,
+            Role = profile.Role,
+            CreatedAt = profile.CreatedAt,
+            UpdatedAt = profile.UpdatedAt,
+            Description = profile.Description,
+            ContactEmail = profile.ContactEmail,
+            Phone = profile.Phone,
+            Address = profile.Address,
+            Website = profile.Website,
+            Industry = profile.Industry,
+            LogoUrl = profile.LogoUrl,
+            LinkedInUrl = profile.LinkedInUrl,
+            TwitterUrl = profile.TwitterUrl,
+            FacebookUrl = profile.FacebookUrl,
+            BusinessHours = profile.BusinessHours,
+            CompanySize = profile.CompanySize
         });
     }
 
     [HttpPut("profile")]
     [Microsoft.AspNetCore.Authorization.Authorize]
-    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateOrganizationProfileDto request)
     {
         var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
                           ?? User.FindFirst("sub")?.Value;
@@ -67,24 +80,68 @@ public class AuthController : ControllerBase
             return NotFound(new { message = "Profile not found" });
         }
 
-        if (!string.IsNullOrWhiteSpace(request.Name))
+        // Role-based access: Only organization users (non-admin) can update organization profile fields
+        if (profile.Role == "admin")
         {
-            profile.Name = request.Name;
+            return Forbid();
         }
+
+        // Update fields if provided
+        if (!string.IsNullOrWhiteSpace(request.Name))
+            profile.Name = request.Name;
+
+        // Basic Info
+        if (request.Description != null)
+            profile.Description = request.Description;
+        if (request.ContactEmail != null)
+            profile.ContactEmail = request.ContactEmail;
+
+        // Extended Info
+        if (request.Phone != null)
+            profile.Phone = request.Phone;
+        if (request.Address != null)
+            profile.Address = request.Address;
+        if (request.Website != null)
+            profile.Website = request.Website;
+        if (request.Industry != null)
+            profile.Industry = request.Industry;
+
+        // Comprehensive Info
+        if (request.LogoUrl != null)
+            profile.LogoUrl = request.LogoUrl;
+        if (request.LinkedInUrl != null)
+            profile.LinkedInUrl = request.LinkedInUrl;
+        if (request.TwitterUrl != null)
+            profile.TwitterUrl = request.TwitterUrl;
+        if (request.FacebookUrl != null)
+            profile.FacebookUrl = request.FacebookUrl;
+        if (request.BusinessHours != null)
+            profile.BusinessHours = request.BusinessHours;
+        if (request.CompanySize != null)
+            profile.CompanySize = request.CompanySize;
 
         profile.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
 
-        return Ok(new
+        return Ok(new ProfileDto
         {
-            id = profile.Id,
-            name = profile.Name,
-            updatedAt = profile.UpdatedAt
+            Id = profile.Id,
+            Name = profile.Name,
+            Role = profile.Role,
+            CreatedAt = profile.CreatedAt,
+            UpdatedAt = profile.UpdatedAt,
+            Description = profile.Description,
+            ContactEmail = profile.ContactEmail,
+            Phone = profile.Phone,
+            Address = profile.Address,
+            Website = profile.Website,
+            Industry = profile.Industry,
+            LogoUrl = profile.LogoUrl,
+            LinkedInUrl = profile.LinkedInUrl,
+            TwitterUrl = profile.TwitterUrl,
+            FacebookUrl = profile.FacebookUrl,
+            BusinessHours = profile.BusinessHours,
+            CompanySize = profile.CompanySize
         });
     }
-}
-
-public class UpdateProfileRequest
-{
-    public string Name { get; set; } = string.Empty;
 }

@@ -65,6 +65,7 @@ public class PurchaseService : IPurchaseService
             PurchasedBy = dto.PurchasedBy,
             PurchaseDate = dto.PurchaseDate,
             Status = PurchaseStatus.Pending,
+            PaymentStatus = PaymentStatus.PendingPayment,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -113,6 +114,12 @@ public class PurchaseService : IPurchaseService
         if (purchase.Status == PurchaseStatus.Completed)
         {
             return MapToDto(purchase);
+        }
+
+        // Validate payment status - must be paid before completing
+        if (purchase.PaymentStatus != PaymentStatus.Paid)
+        {
+            throw new InvalidOperationException("Cannot complete purchase: Payment has not been received");
         }
 
         foreach (var item in purchase.PurchaseItems.Where(pi => !pi.AddedToInventory))
@@ -176,6 +183,8 @@ public class PurchaseService : IPurchaseService
             Status = purchase.Status,
             PurchaseDate = purchase.PurchaseDate,
             CreatedAt = purchase.CreatedAt,
+            PaymentStatus = purchase.PaymentStatus,
+            PaidAt = purchase.PaidAt,
             PurchaseItems = purchase.PurchaseItems.Select(pi => new PurchaseItemDto
             {
                 Id = pi.Id,

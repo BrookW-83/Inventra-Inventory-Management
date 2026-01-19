@@ -1,7 +1,7 @@
 # Environment configuration files
-.env
-**/.env
 
 # ASP.NET Core configuration
 appsettings.json
 **/appsettings.json
+config.bat
+node_modules

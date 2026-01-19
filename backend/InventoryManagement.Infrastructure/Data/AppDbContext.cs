@@ -35,6 +35,11 @@ public class AppDbContext : DbContext
                 .WithOne(e => e.Purchase)
                 .HasForeignKey(e => e.PurchaseId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Stripe Payment Fields
+            entity.Property(e => e.StripeSessionId).HasMaxLength(255);
+            entity.Property(e => e.StripePaymentIntentId).HasMaxLength(255);
+            entity.Property(e => e.PaymentStatus).HasConversion<int>();
         });
 
         modelBuilder.Entity<PurchaseItem>(entity =>
@@ -85,6 +90,48 @@ public class AppDbContext : DbContext
             entity.Property(e => e.UpdatedAt)
                 .HasColumnName("updated_at")
                 .HasColumnType("timestamp with time zone");
+
+            // Basic Info
+            entity.Property(e => e.Description)
+                .HasColumnName("description")
+                .HasMaxLength(1000);
+            entity.Property(e => e.ContactEmail)
+                .HasColumnName("contact_email")
+                .HasMaxLength(255);
+
+            // Extended Info
+            entity.Property(e => e.Phone)
+                .HasColumnName("phone")
+                .HasMaxLength(50);
+            entity.Property(e => e.Address)
+                .HasColumnName("address")
+                .HasMaxLength(500);
+            entity.Property(e => e.Website)
+                .HasColumnName("website")
+                .HasMaxLength(255);
+            entity.Property(e => e.Industry)
+                .HasColumnName("industry")
+                .HasMaxLength(100);
+
+            // Comprehensive Info
+            entity.Property(e => e.LogoUrl)
+                .HasColumnName("logo_url")
+                .HasMaxLength(500);
+            entity.Property(e => e.LinkedInUrl)
+                .HasColumnName("linkedin_url")
+                .HasMaxLength(255);
+            entity.Property(e => e.TwitterUrl)
+                .HasColumnName("twitter_url")
+                .HasMaxLength(255);
+            entity.Property(e => e.FacebookUrl)
+                .HasColumnName("facebook_url")
+                .HasMaxLength(255);
+            entity.Property(e => e.BusinessHours)
+                .HasColumnName("business_hours")
+                .HasMaxLength(200);
+            entity.Property(e => e.CompanySize)
+                .HasColumnName("company_size")
+                .HasMaxLength(50);
         });
     }
 }

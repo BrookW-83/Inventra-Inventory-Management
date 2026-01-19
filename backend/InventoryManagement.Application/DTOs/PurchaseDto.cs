@@ -11,4 +11,8 @@ public class PurchaseDto
     public DateTime PurchaseDate { get; set; }
     public DateTime CreatedAt { get; set; }
     public List<PurchaseItemDto> PurchaseItems { get; set; } = new();
+
+    // Payment fields
+    public PaymentStatus PaymentStatus { get; set; }
+    public DateTime? PaidAt { get; set; }
 }
