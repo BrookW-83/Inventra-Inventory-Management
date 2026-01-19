@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FiHome, FiPackage, FiShoppingCart, FiFileText, FiUsers } from 'react-icons/fi';
+import { FiHome, FiPackage, FiShoppingCart, FiFileText, FiUsers, FiUser } from 'react-icons/fi';
 import { useProfile } from '@/hooks/useProfile';
 
 interface NavLink {
@@ -35,6 +35,11 @@ export function Sidebar() {
       href: '/image-recognition',
       label: 'Smart Logging',
       icon: FiFileText
+    },
+    {
+      href: '/profile',
+      label: 'Profile',
+      icon: FiUser
     },
   ];
 

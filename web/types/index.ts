@@ -12,6 +12,14 @@ export enum PurchaseStatus {
   Cancelled = 3,
 }
 
+export enum PaymentStatus {
+  NotRequired = 0,
+  PendingPayment = 1,
+  Paid = 2,
+  Failed = 3,
+  Refunded = 4,
+}
+
 export interface InventoryItem {
   id: string;
   name: string;
@@ -62,6 +70,14 @@ export interface Purchase {
   purchaseDate: string;
   createdAt: string;
   purchaseItems: PurchaseItem[];
+  // Payment fields
+  paymentStatus: PaymentStatus;
+  paidAt?: string;
+}
+
+export interface CreateCheckoutSessionResponse {
+  sessionId: string;
+  sessionUrl: string;
 }
 
 export interface CreatePurchaseItemDto {
@@ -113,13 +129,48 @@ export enum UserRole {
   Admin = 'admin',
 }
 
-// Profile with role
+// Profile with role and organization fields
 export interface UserProfile {
   id: string;
   name: string;
   role: UserRole;
   createdAt: string;
   updatedAt: string;
+
+  // Basic Info
+  description?: string;
+  contactEmail?: string;
+
+  // Extended Info
+  phone?: string;
+  address?: string;
+  website?: string;
+  industry?: string;
+
+  // Comprehensive Info
+  logoUrl?: string;
+  linkedInUrl?: string;
+  twitterUrl?: string;
+  facebookUrl?: string;
+  businessHours?: string;
+  companySize?: string;
+}
+
+// DTO for updating organization profile
+export interface UpdateOrganizationProfileDto {
+  name?: string;
+  description?: string;
+  contactEmail?: string;
+  phone?: string;
+  address?: string;
+  website?: string;
+  industry?: string;
+  logoUrl?: string;
+  linkedInUrl?: string;
+  twitterUrl?: string;
+  facebookUrl?: string;
+  businessHours?: string;
+  companySize?: string;
 }
 
 // Admin Dashboard Stats

@@ -255,15 +255,29 @@ function SignInFormContent() {
                 </div>
                 <p className="font-semibold text-foreground">Demo Credentials</p>
               </div>
-              <div className="space-y-1 text-sm text-muted-foreground">
-                <p className="flex items-center gap-2">
-                  <FiMail className="w-3 h-3" />
-                  <span className="font-medium">Email:</span> admin@example.com
-                </p>
-                <p className="flex items-center gap-2">
-                  <FiLock className="w-3 h-3" />
-                  <span className="font-medium">Password:</span> admin123
-                </p>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <div className="space-y-1">
+                  <p className="font-medium text-foreground">User Demo</p>
+                  <p className="flex items-center gap-2">
+                    <FiMail className="w-3 h-3" />
+                    <span className="font-medium">Email:</span> Sara1dubale@gmail.com
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <FiLock className="w-3 h-3" />
+                    <span className="font-medium">Password:</span> Test123!
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="font-medium text-foreground">Admin Test</p>
+                  <p className="flex items-center gap-2">
+                    <FiMail className="w-3 h-3" />
+                    <span className="font-medium">Email:</span> superadmin@inventra.com
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <FiLock className="w-3 h-3" />
+                    <span className="font-medium">Password:</span> Test123!
+                  </p>
+                </div>
               </div>
             </div>
           </form>

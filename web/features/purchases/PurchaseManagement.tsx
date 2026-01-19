@@ -12,13 +12,15 @@ import {
   useCreatePurchaseMutation,
   useCompletePurchaseMutation,
 } from '@/lib/api/purchaseApi';
-import { InventorySection, PurchaseStatus, CreatePurchaseDto, CreatePurchaseItemDto } from '@/types';
+import { useCreateCheckoutSessionMutation } from '@/lib/api/paymentApi';
+import { InventorySection, PurchaseStatus, PaymentStatus, CreatePurchaseDto, CreatePurchaseItemDto, Purchase } from '@/types';
 
 export function PurchaseManagement() {
   const { data: purchases, isLoading, error } = useGetPurchasesQuery();
   const { data: activePurchases } = useGetActivePurchasesQuery();
   const [createPurchase, { isLoading: isCreating }] = useCreatePurchaseMutation();
   const [completePurchase, { isLoading: isCompleting }] = useCompletePurchaseMutation();
+  const [createCheckoutSession, { isLoading: isRedirecting }] = useCreateCheckoutSessionMutation();
 
   const sectionOptions = Object.values(InventorySection).filter(
     (value): value is InventorySection => typeof value === 'number'
@@ -79,15 +81,22 @@ export function PurchaseManagement() {
     }
 
     try {
-      await createPurchase(formData).unwrap();
+      const purchase = await createPurchase(formData).unwrap();
 
-      setFormData({
-        purchasedBy: '',
-        purchaseDate: new Date().toISOString().split('T')[0],
-        purchaseItems: [],
-      });
+      // Redirect to Stripe checkout
+      const checkoutResponse = await createCheckoutSession(purchase.id).unwrap();
+      window.location.href = checkoutResponse.sessionUrl;
     } catch {
       alert('Failed to create purchase. Please try again.');
+    }
+  };
+
+  const handlePayNow = async (purchaseId: string) => {
+    try {
+      const checkoutResponse = await createCheckoutSession(purchaseId).unwrap();
+      window.location.href = checkoutResponse.sessionUrl;
+    } catch {
+      alert('Failed to create payment session. Please try again.');
     }
   };
 
@@ -111,6 +120,36 @@ export function PurchaseManagement() {
 
   const getStatusText = (status: PurchaseStatus) => {
     return PurchaseStatus[status];
+  };
+
+  const getPaymentStatusBadge = (status: PaymentStatus) => {
+    const colors = {
+      [PaymentStatus.NotRequired]: 'bg-gray-100 text-gray-800',
+      [PaymentStatus.PendingPayment]: 'bg-orange-100 text-orange-800',
+      [PaymentStatus.Paid]: 'bg-green-100 text-green-800',
+      [PaymentStatus.Failed]: 'bg-red-100 text-red-800',
+      [PaymentStatus.Refunded]: 'bg-purple-100 text-purple-800',
+    };
+    return colors[status];
+  };
+
+  const getPaymentStatusText = (status: PaymentStatus) => {
+    const texts = {
+      [PaymentStatus.NotRequired]: 'Not Required',
+      [PaymentStatus.PendingPayment]: 'Pending Payment',
+      [PaymentStatus.Paid]: 'Paid',
+      [PaymentStatus.Failed]: 'Failed',
+      [PaymentStatus.Refunded]: 'Refunded',
+    };
+    return texts[status];
+  };
+
+  const canCompleteOrderNow = (purchase: Purchase) => {
+    return purchase.paymentStatus === PaymentStatus.Paid && purchase.status !== PurchaseStatus.Completed;
+  };
+
+  const needsPayment = (purchase: Purchase) => {
+    return purchase.paymentStatus === PaymentStatus.PendingPayment || purchase.paymentStatus === PaymentStatus.Failed;
   };
 
   if (isLoading) {
@@ -242,8 +281,8 @@ export function PurchaseManagement() {
                 </div>
               )}
 
-              <Button type="submit" disabled={formData.purchaseItems.length === 0 || isCreating}>
-                {isCreating ? 'Creating...' : 'Log External Purchase'}
+              <Button type="submit" disabled={formData.purchaseItems.length === 0 || isCreating || isRedirecting}>
+                {isCreating || isRedirecting ? 'Processing...' : 'Create Purchase & Pay'}
               </Button>
             </form>
           </CardContent>
@@ -265,22 +304,38 @@ export function PurchaseManagement() {
                           {new Date(purchase.purchaseDate).toLocaleDateString()}
                         </p>
                       </div>
-                      <span className={`px-2 py-1 rounded text-xs ${getStatusBadge(purchase.status)}`}>
-                        {getStatusText(purchase.status)}
-                      </span>
+                      <div className="flex flex-col gap-1 items-end">
+                        <span className={`px-2 py-1 rounded text-xs ${getStatusBadge(purchase.status)}`}>
+                          {getStatusText(purchase.status)}
+                        </span>
+                        <span className={`px-2 py-1 rounded text-xs ${getPaymentStatusBadge(purchase.paymentStatus)}`}>
+                          {getPaymentStatusText(purchase.paymentStatus)}
+                        </span>
+                      </div>
                     </div>
                     <p className="text-sm">Items: {purchase.purchaseItems.length}</p>
                     <p className="font-medium">${purchase.totalCost.toFixed(2)}</p>
-                    {purchase.status !== PurchaseStatus.Completed && (
-                      <Button
-                        size="sm"
-                        className="mt-2"
-                        onClick={() => handleCompletePurchase(purchase.id)}
-                        disabled={isCompleting}
-                      >
-                        {isCompleting ? 'Processing...' : 'Add to Inventory'}
-                      </Button>
-                    )}
+                    <div className="flex gap-2 mt-2">
+                      {needsPayment(purchase) && (
+                        <Button
+                          size="sm"
+                          onClick={() => handlePayNow(purchase.id)}
+                          disabled={isRedirecting}
+                        >
+                          {isRedirecting ? 'Redirecting...' : 'Pay Now'}
+                        </Button>
+                      )}
+                      {canCompleteOrderNow(purchase) && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleCompletePurchase(purchase.id)}
+                          disabled={isCompleting}
+                        >
+                          {isCompleting ? 'Processing...' : 'Add to Inventory'}
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 ))
               ) : (
@@ -304,6 +359,7 @@ export function PurchaseManagement() {
                 <TableHead>Items</TableHead>
                 <TableHead>Total Cost</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Payment</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -320,23 +376,39 @@ export function PurchaseManagement() {
                         {getStatusText(purchase.status)}
                       </span>
                     </TableCell>
+                    <TableCell>
+                      <span className={`px-2 py-1 rounded text-xs ${getPaymentStatusBadge(purchase.paymentStatus)}`}>
+                        {getPaymentStatusText(purchase.paymentStatus)}
+                      </span>
+                    </TableCell>
                     <TableCell className="text-right">
-                      {purchase.status !== PurchaseStatus.Completed && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleCompletePurchase(purchase.id)}
-                          disabled={isCompleting}
-                        >
-                          Mark Completed
-                        </Button>
-                      )}
+                      <div className="flex gap-2 justify-end">
+                        {needsPayment(purchase) && (
+                          <Button
+                            size="sm"
+                            onClick={() => handlePayNow(purchase.id)}
+                            disabled={isRedirecting}
+                          >
+                            Pay Now
+                          </Button>
+                        )}
+                        {canCompleteOrderNow(purchase) && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleCompletePurchase(purchase.id)}
+                            disabled={isCompleting}
+                          >
+                            Add to Inventory
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center text-gray-500">
+                  <TableCell colSpan={7} className="text-center text-gray-500">
                     No purchases found
                   </TableCell>
                 </TableRow>
